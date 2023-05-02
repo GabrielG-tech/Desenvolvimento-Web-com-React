@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"> </script>
+    <link href="ciclo.css" rel="stylesheet" type="text/css" />
+    <title>Ciclo de vida</title>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        class Relogio extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    date: new Date(),
+                    times: []
+                };
+            }
+            componentDidMount() {
+                this.timer = setInterval(() => {
+                    this.setState({
+                        date: new Date()
+                    })
+                }, 1000);
+            }
+            componentWillUnmount() {
+                clearInterval(this.timer);
+            }
+            render() {
+                return (
+                    <div className="container">
+                        <h1 className="site_name">==== Horário ====</h1>
+                        <h2 className="real_time">
+                            {this.state.date.toLocaleTimeString()}    
+                        </h2>
+                        <button className="btn_gravar" onClick={this.addTime}>Gravar</button>
+                        <ul>{this.historyBuilder()}</ul>
+                    </div>
+                )
+            }
+            addTime = () => {
+                const listTimes = this.state.times;
+                const date = this.state.date;
+                listTimes.push(this.dateFormat(date));
+                this.setState({
+                    times: listTimes
+                })
+            }
+            dateFormat(date) {
+                return `${date.getHours().toString().padStart(2, '0')}:` +
+                       `${date.getMinutes().toString().padStart(2, '0')}:` +
+                       `${date.getSeconds().toString().padStart(2, '0')}`
+            }
+            historyBuilder() {
+                const listTimes = this.state.times;
+                return listTimes.map((time, index) => 
+                    <li className="li_time" key={ 'time' + index }>{ index } - { time }</li>)
+            }
+        }
+
+        function horario() {
+            // VS 17
+            ReactDOM.render(
+                <Relogio />,
+                document.getElementById('root')
+            );
+        }
+        setInterval(horario, 1000);
+    </script>
+</body>
+</html>
